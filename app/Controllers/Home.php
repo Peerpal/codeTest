@@ -13,12 +13,12 @@ use GuzzleHttp\Exception\GuzzleException;
  */
 class Home extends BaseController
 {
+    use ResponseTrait;
+
     public function __construct()
     {
         $this->db = db_connect();
     }
-
-    use ResponseTrait;
 
 
     public function index()
@@ -118,5 +118,25 @@ class Home extends BaseController
         sort($result);
 
         return $result;
+    }
+
+
+    public function update()
+    {
+//        if ($this->validate([
+//            "id" => "required",
+//            "name" => "required"
+//        ])) {
+            $data = [
+                "id" => $this->request->getVar('id'),
+                "name" => $this->request->getVar('name')
+            ];
+
+            $model = new MenuModel();
+
+            $model->update($data['id'], ["name" => $data['name']]);
+
+//        }
+        return redirect()->back();
     }
 }

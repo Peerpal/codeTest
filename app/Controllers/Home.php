@@ -121,22 +121,26 @@ class Home extends BaseController
     }
 
 
-    public function update()
+    public function update($id = 0, $name = "null")
     {
 //        if ($this->validate([
 //            "id" => "required",
 //            "name" => "required"
 //        ])) {
-            $data = [
-                "id" => $this->request->getVar('id'),
-                "name" => $this->request->getVar('name')
-            ];
+    
+
 
             $model = new MenuModel();
 
-            $model->update($data['id'], ["name" => $data['name']]);
+            $menu = $model->find($id);
+            $menu['label'] = $name;
 
+            
+
+            $model->save($menu);
+
+            return $this->response->setJSON(["Updated data"]);
 //        }
-        return redirect()->back();
+        // return redirect()->back();
     }
 }

@@ -38,7 +38,7 @@ $routes->set404Override();
 $routes->get('/', 'Home::index');
 $routes->get('/insert', 'Home::insert');
 $routes->get('/fetch', 'Home::fetch');
-$routes->post('/edit', 'Home::update');
+$routes->get('/edit/(:any)/(:any)', 'Home::update/$1/$2',);
 
 /*
  * --------------------------------------------------------------------

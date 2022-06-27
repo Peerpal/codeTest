@@ -7,37 +7,12 @@
     <meta name="description" content="The small framework with powerful features">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" type="image/png" href="/favicon.ico" />
-
-    <style>
-        li::after {
-            display: none;
-        }
-    </style>
 </head>
 
 <body>
     <?= $this->renderSection('content') ?>
 
-    <ul id="list"></ul>
-
     <script>
-        const renderList = async () => {
-            let view = document.querySelector('#list');
-            let data = await fetch('/fetch').then(result => result.json()).then(json => json)
-
-            let element = ''
-            data.sort(sortFunction).map(menu => {
-                return element += `<li>
-                <p onclick="PopUp('${menu.label}','${menu.id}')">${menu.label}</p>
-<ul>
-                    ${menu.children.sort(sortFunction).map(child => renderSubList(child)).join('')}
-                </ul>
-            </li>`
-            }).join('')
-
-            view.innerHTML = element
-
-        }
         const PopUp = async (label, id) => {
             let updateValue = prompt(`update menu label ${label}`)
             try {
@@ -50,19 +25,6 @@
                 alert(error.message)
             }
         }
-
-
-        const renderSubList = (menu) => {
-            return `<li>
-                <p onclick="PopUp('${menu.label}','${menu.id}')">${menu.label}</p>
-                ${!menu.children?.length ? '' : `
-                <ul>
-                    ${menu.children.sort(sortFunction).map(child => renderSubList(child)).join('')}
-                </ul>
-                `}
-            </li>`
-        }
-
     </script>
 
 </body>

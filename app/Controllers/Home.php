@@ -117,12 +117,9 @@ class Home extends BaseController
                 "children" => $this->populateChildren($data)
             ];
 
-//            asort($singleData);
-
             $result[] = $singleData;
         }
 
-//        ksort($result);
 
         return $result;
     }
@@ -140,27 +137,6 @@ class Home extends BaseController
         $model->save($menu);
 
         return $this->response->setJSON(["Updated data"]);
-//        }
-        // return redirect()->back();
-    }
-
-    public function renderList($menu): string
-    {
-        $list = "<ul>";
-        foreach ($menu as $child) {
-                $list .= "<li><p>child</p><li>";
-                if (!empty($child['children'])) {
-                    $list .= "<ul>";
-                    foreach ($child['children'] as $sublist) {
-                        $this->renderList($sublist);
-                    }
-                    $list .= "</ul>";
-                }
-
-        }
-        $list .= "</ul>";
-
-        return $list;
     }
 
 }

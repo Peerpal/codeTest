@@ -8,6 +8,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" type="image/png" href="/favicon.ico" />
 
+    <style>
+        li::after {
+            display: none;
+        }
+    </style>
 </head>
 
 <body>
@@ -16,7 +21,6 @@
     <ul id="list"></ul>
 
     <script>
-        const sortFunction = (a, b) => a.label.toLowerCase() > b.label.toLowerCase() ? 1 : -1
         const renderList = async () => {
             let view = document.querySelector('#list');
             let data = await fetch('/fetch').then(result => result.json()).then(json => json)
@@ -59,7 +63,6 @@
             </li>`
         }
 
-        renderList()
     </script>
 
 </body>

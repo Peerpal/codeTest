@@ -15,6 +15,7 @@ class Home extends BaseController
 {
     use ResponseTrait;
 
+
     public function __construct()
     {
         $this->db = db_connect();
@@ -23,13 +24,16 @@ class Home extends BaseController
 
     public function index()
     {
-        return view('welcome_message');
+        $data = $this->fetch();
+        return view(    'welcome_message', ["data"=>$data]);
     }
+
     public function fetch()
     {
 
         $menuRecords = $this->db->table('menus')
             ->where('parent_id', null)
+            ->orderBy('label', 'ASC')
             ->get()
             ->getResult();
 
@@ -39,16 +43,15 @@ class Home extends BaseController
             $singleData = [
                 "id" => $data->id,
                 "label" => $data->label,
-                "children" => $this->populateChildren($data)
+                "children" =>  $this->populateChildren($data)
             ];
+
 
             $result[] = $singleData;
         }
-
-
-        sort($result);
-        return $this->response->setJSON($result);
+        return $result;
     }
+
     public function insert()
     {
         try {
@@ -56,7 +59,7 @@ class Home extends BaseController
 
             if ($response) {
                 $db = db_connect();
-                
+
                 $db->table('menus')->truncate();
 
                 foreach ($response->menu_items as $menu_item) {
@@ -75,7 +78,8 @@ class Home extends BaseController
 //        return view('welcome_message');
     }
 
-    private function createMenuData($menuItem, $parent = null) {
+    private function createMenuData($menuItem, $parent = null)
+    {
         $menuModel = new MenuModel();
 
         $menu = new Menu();
@@ -94,12 +98,13 @@ class Home extends BaseController
                 $this->createMenuData($childMenu, $menuModel->getInsertID());
             }
         }
-}
+    }
 
     private function populateChildren($record): array
     {
         $childrenRecords = $this->db->table('menus')
             ->where('parent_id', $record->id)
+            ->orderBy('label', 'ASC')
             ->get()
             ->getResult();
 
@@ -112,10 +117,12 @@ class Home extends BaseController
                 "children" => $this->populateChildren($data)
             ];
 
-           $result[] = $singleData;
+//            asort($singleData);
+
+            $result[] = $singleData;
         }
 
-        sort($result);
+//        ksort($result);
 
         return $result;
     }
@@ -123,24 +130,37 @@ class Home extends BaseController
 
     public function update($id = 0, $name = "null")
     {
-//        if ($this->validate([
-//            "id" => "required",
-//            "name" => "required"
-//        ])) {
-    
+
+        $model = new MenuModel();
+
+        $menu = $model->find($id);
+        $menu['label'] = $name;
 
 
-            $model = new MenuModel();
+        $model->save($menu);
 
-            $menu = $model->find($id);
-            $menu['label'] = $name;
-
-            
-
-            $model->save($menu);
-
-            return $this->response->setJSON(["Updated data"]);
+        return $this->response->setJSON(["Updated data"]);
 //        }
         // return redirect()->back();
     }
+
+    public function renderList($menu): string
+    {
+        $list = "<ul>";
+        foreach ($menu as $child) {
+                $list .= "<li><p>child</p><li>";
+                if (!empty($child['children'])) {
+                    $list .= "<ul>";
+                    foreach ($child['children'] as $sublist) {
+                        $this->renderList($sublist);
+                    }
+                    $list .= "</ul>";
+                }
+
+        }
+        $list .= "</ul>";
+
+        return $list;
+    }
+
 }
